@@ -1,40 +1,26 @@
-pipeline {
-    agent any
-
-    stages {
-        stage('Checkout') {
-            steps {
-                // Checkout the code from GitHub
-                checkout scm
-            }
-        }
-        
-        stage('Build Docker Image') {
-            steps {
-                // Build the Docker image using the Dockerfile in the repository
-                script {
-                    def dockerImage = docker.build('my-app:${env.BUILD_NUMBER}')
-                }
-            }
-        }
-        
-        stage('Deploy to Docker') {
-            steps {
-                // Run the Docker container from the built image
-                script {
-                    def appContainer = dockerImage.run('-p 8080:80 -d')
-                }
-            }
-        }
+node {
+    def imageName = 'my-docker-image'
+    def imageTag = 'latest'
+    
+    // Build Docker image
+    stage('Build Docker Image') {
+        checkout scm
+        sh "docker build -t ${imageName}:${imageTag} ."
     }
-
-    post {
-        always {
-            // Clean up resources (stop and remove containers, etc.)
-            script {
-                appContainer.stop()
-                appContainer.remove()
-            }
-        }
+    
+    // Run Docker container
+    stage('Run Docker Container') {
+        sh "docker run -d --name ${imageName} -p 5000:5000 ${imageName}:${imageTag}"
+    }
+    
+    // Display container logs
+    stage('Display Logs') {
+        sh "docker logs ${imageName}"
+    }
+    
+    // Cleanup
+    stage('Clean Up') {
+        sh "docker stop ${imageName} || true"
+        sh "docker rm ${imageName} || true"
     }
 }
