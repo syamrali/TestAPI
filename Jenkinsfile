@@ -1,6 +1,11 @@
 node {
     def imageName = 'my-docker-image'
     def imageTag = 'latest'
+
+
+    sh "docker stop ${imageName} || true"
+    sh "docker rm ${imageName} || true"
+    sh "docker rmi ${imageName}:${imageTag} || true"
     
     // Build Docker image
     stage('Build Docker Image') {
