@@ -22,10 +22,5 @@ node {
     stage('Display Logs') {
         sh "docker logs ${imageName}"
     }
-    
-    // Cleanup
-    stage('Clean Up') {
-        sh "docker stop ${imageName} || true"
-        sh "docker rm ${imageName} || true"
-    }
+   
 }
