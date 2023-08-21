@@ -20,7 +20,7 @@ node {
     
    stage('Display Logs') {
         // Start a background process to continuously display logs
-        def logProcess = sh(script: "docker logs -f ${containerName}", returnStatus: true, background: true)
+        def logProcess = sh(script: "docker logs -f ${imageName}", returnStatus: true, background: true)
 
         // Keep the pipeline running while logs are being displayed
         while (logProcess.isRunning()) {
